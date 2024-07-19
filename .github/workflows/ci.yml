@@ -46,3 +46,16 @@ jobs:
       - name: Analyzing the code with pylint
         run: |
           pylint $(git ls-files '*.py')
+
+  unit-testing:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name : Checkout code
+      uses : actions/checkout@v2
+
+    - name : Install Packages 
+      run : pip install pytest
+    
+    - name : Run tests 
+      run : pytest test_gym_membership.py
