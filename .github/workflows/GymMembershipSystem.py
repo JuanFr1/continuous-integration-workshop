@@ -1,8 +1,8 @@
 class GymMembershipSystem:
     MEMBERSHIP_PLANS = {
-        'Basic': {'base_cost': 50, 'features': ['Group Classes', 'Locker Access'], 'feature_costs': [20, 10]},
-        'Premium': {'base_cost': 100, 'features': ['Personal Training', 'Group Classes', 'Locker Access'], 'feature_costs': [50, 20, 10], 'is_premium': True},
-        'Family': {'base_cost': 150, 'features': ['Group Classes', 'Locker Access', 'Child Care'], 'feature_costs': [20, 10, 30]}
+        'Basic': {'base_cost': 50, 'features': ['None', 'Group Classes', 'Locker Access'], 'feature_costs': [0, 20, 10]},
+        'Premium': {'base_cost': 100, 'features': ['None', 'Personal Training', 'Group Classes', 'Locker Access'], 'feature_costs': [0, 50, 20, 10], 'is_premium': True},
+        'Family': {'base_cost': 150, 'features': ['None', 'Group Classes', 'Locker Access', 'Child Care'], 'feature_costs': [0, 20, 10, 30]}
     }
 
     PREMIUM_SURCHARGE_RATE = 0.15
@@ -33,15 +33,18 @@ class GymMembershipSystem:
 
     def select_additional_features(self):
         while True:
-            features_str = input(f"Select additional features separated by commas ({', '.join(self.MEMBERSHIP_PLANS[self.selected_plan]['features'])}): ").strip()
+            features_str = input(f"Select additional features separated by commas ({', '.join(self.MEMBERSHIP_PLANS[self.selected_plan]['features'])}). Select 'None' for no additional features: ").strip()
             selected_features = [f.strip() for f in features_str.split(',')]
             invalid_features = [f for f in selected_features if f not in self.MEMBERSHIP_PLANS[self.selected_plan]['features']]
             if invalid_features:
                 print(f"Invalid features selected: {', '.join(invalid_features)}. Please select valid features.")
             else:
-                self.selected_features = selected_features
+                if 'None' in selected_features:
+                    self.selected_features = []
+                else:
+                    self.selected_features = selected_features
                 break
-        print(f"Additional features selected: {', '.join(self.selected_features)}\n")
+        print(f"Additional features selected: {', '.join(self.selected_features) if self.selected_features else 'None'}\n")
 
     def calculate_base_cost(self):
         base_cost = self.MEMBERSHIP_PLANS[self.selected_plan]['base_cost']
@@ -93,7 +96,7 @@ class GymMembershipSystem:
             print("\nMembership Details:")
             print(f"Selected Membership Plan: {self.selected_plan}")
             print(f"Number of Members: {self.num_members}")
-            print(f"Additional Features: {', '.join(self.selected_features)}")
+            print(f"Additional Features: {', '.join(self.selected_features) if self.selected_features else 'None'}")
 
             try:
                 total_cost = self.calculate_total_cost()
@@ -121,7 +124,7 @@ class GymMembershipSystem:
                     elif confirm == 'no':
                         edit_or_cancel = input("Do you want to edit your selection (edit) or cancel (cancel)?: ").strip().lower()
                         if edit_or_cancel == 'edit':
-                            return -1  # Return -1 if editing is chosen
+                            return -2  # Return -2 if editing is chosen
                         elif edit_or_cancel == 'cancel':
                             print("Purchase canceled.")
                             return -1  # Return -1 if purchase is canceled
@@ -152,9 +155,13 @@ class GymMembershipSystem:
 
                 if self.is_membership_available():
                     total_cost = self.confirm_membership()
-                    if total_cost != -1:
+                    if total_cost == -1:
+                        break  # Stop the process if canceled
+                    elif total_cost == -2:
+                        continue  # Restart the process if editing
+                    else:
                         print(f"\nMembership confirmed. Final Total Cost: ${total_cost:.2f}")
-                        break
+                        break  # Confirm membership and stop the process
                 else:
                     print("Selected options are not available. Please choose again.\n")
 
