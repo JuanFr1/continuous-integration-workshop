@@ -1,5 +1,6 @@
 import unittest
-import GymMembershipSystem
+from unittest import mock
+from gym_membership import GymMembershipSystem
 
 class TestGymMembershipSystem(unittest.TestCase):
     def setUp(self):
@@ -63,7 +64,7 @@ class TestGymMembershipSystem(unittest.TestCase):
         self.gym_system.selected_features = ['Group Classes']
         self.gym_system.num_members = 1
 
-        with unittest.mock.patch('builtins.input', side_effect=['no', 'cancel']):
+        with mock.patch('builtins.input', side_effect=['no', 'cancel']):
             self.assertEqual(self.gym_system.confirm_membership(), -1)
 
     def test_confirm_membership_edit(self):
@@ -71,7 +72,7 @@ class TestGymMembershipSystem(unittest.TestCase):
         self.gym_system.selected_features = ['Group Classes']
         self.gym_system.num_members = 1
 
-        with unittest.mock.patch('builtins.input', side_effect=['no', 'edit']):
+        with mock.patch('builtins.input', side_effect=['no', 'edit']):
             self.assertEqual(self.gym_system.confirm_membership(), -2)
 
     def test_confirm_membership_yes(self):
@@ -79,7 +80,7 @@ class TestGymMembershipSystem(unittest.TestCase):
         self.gym_system.selected_features = ['Group Classes']
         self.gym_system.num_members = 1
 
-        with unittest.mock.patch('builtins.input', side_effect=['yes']):
+        with mock.patch('builtins.input', side_effect=['yes']):
             total_cost = self.gym_system.calculate_total_cost()
             self.assertEqual(self.gym_system.confirm_membership(), int(total_cost))
 
